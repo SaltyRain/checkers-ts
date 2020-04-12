@@ -64,11 +64,11 @@ function processMessage( sendMessage: SendMessage, message: AnyServerMessage ): 
 	{
 		case 'gameStarted':
 			startGame();
-			changePlayer( message.myTurn );
+			changePlayer( message.myTurn, message.gameField, message.role );
 			break;
 		
 		case 'changePlayer':
-			changePlayer( message.myTurn );
+			changePlayer( message.myTurn, message.gameField, message.role );
 			break;
 		
 		case 'gameResult':

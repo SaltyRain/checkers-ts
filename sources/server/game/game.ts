@@ -6,6 +6,9 @@ import type {
 	AnyServerMessage,
 	GameStartedMessage,
 	GameAbortedMessage,
+	PlayerGameState,
+	PlayerRole,
+	CellState
 } from '../../common/messages.js';
 
 /**
@@ -27,7 +30,11 @@ class Game
 	/**
 	 * Информация о ходах игроков
 	 */
-	private _playersState!: WeakMap<WebSocket, number | null>;
+	private _playersState!: WeakMap<WebSocket, PlayerRole>;
+
+	private _currentMove!: WebSocket;
+
+	private _gameField!: Array<Array<CellState>>;
 	
 	/**
 	 * @param session Сессия игры, содержащая перечень соединений с игроками
@@ -81,18 +88,24 @@ class Game
 	 */
 	private _sendStartMessage(): Promise<void[]>
 	{
-		this._playersState = new WeakMap();
+		this._gameField = [];
+		this._currentMove = this._session[0];
+		this._playersState = new WeakMap<WebSocket, PlayerRole>();
 		
 		const data: GameStartedMessage = {
 			type: 'gameStarted',
 			myTurn: true,
+			gameField: this._gameField,
+			role: 'x'
 		};
 		const promises: Promise<void>[] = [];
 		
 		for ( const player of this._session )
 		{
 			promises.push( this._sendMessage( player, data ) );
+			this._playersState.set(player, data.role);
 			data.myTurn = false;
+			data.role = 'o';
 		}
 		
 		return Promise.all( promises );
@@ -186,8 +199,8 @@ class Game
 	{
 		switch ( message.type )
 		{
-			case 'playerRoll':
-				this._onPlayerRoll( player, message.number );
+			case 'playerMove':
+				this._onPlayerMove( player, message.move );
 				break;
 			
 			case 'repeatGame':
@@ -221,11 +234,11 @@ class Game
 	 * Обрабатывает ход игрока
 	 * 
 	 * @param currentPlayer Игрок, от которого поступило сообщение
-	 * @param currentPlayerNumber Число, загаданное игроком
+	 * @param moveInfo Информация о ходе
 	 */
-	private _onPlayerRoll( currentPlayer: WebSocket, currentPlayerNumber: number ): void
+	private _onPlayerMove( currentPlayer: WebSocket, moveInfo: PlayerGameState ): void
 	{
-		if ( this._playersState.get( currentPlayer ) != null )
+		if ( this._currentMove !== currentPlayer)
 		{
 			this._sendMessage(
 				currentPlayer,
@@ -239,56 +252,145 @@ class Game
 			return;
 		}
 		
-		this._playersState.set( currentPlayer, currentPlayerNumber );
+		if (moveInfo.position.col > 3 || moveInfo.position.row > 3 || moveInfo.position.col < 1 || moveInfo.position.col < 1)
+		{
+			this._sendMessage(
+				currentPlayer,
+				{
+					type: 'incorrectRequest',
+					message: 'Out of field',
+				},
+			)
+				.catch( onError );
+			return;
+		}
+
+		if (moveInfo.clicked === true)
+		{
+			this._sendMessage(
+				currentPlayer,
+				{
+					type: 'incorrectRequest',
+					message: 'Cell is occupied',
+				},
+			)
+				.catch( onError );
+			return;
+		}
+
+		const currentRole: PlayerRole = this._playersState.get(currentPlayer)!;
+
+		// this._playersState.set( currentPlayer, currentPlayerNumber );
 		
-		let maxNumber: number = currentPlayerNumber;
-		let maxNumberPlayer: WebSocket = currentPlayer;
-		
+		// let maxNumber: number = currentPlayerNumber;
+		// let maxNumberPlayer: WebSocket = currentPlayer;
+
+		let player2: WebSocket = currentPlayer;
+		let endGame: number = 0;		
 		for ( const player of this._session )
 		{
-			const playerNumber = this._playersState.get( player );
-			
-			if ( playerNumber == null )
+			if (player !== currentPlayer)
 			{
-				this._sendMessage(
-					player,
-					{
-						type: 'changePlayer',
-						myTurn: true,
-					},
-				)
-					.catch( onError );
-				this._sendMessage(
-					currentPlayer,
-					{
-						type: 'changePlayer',
-						myTurn: false,
-					},
-				)
-					.catch( onError );
+				player2 = player;
+			}
+			endGame |= Number(Game._checkWin( this._gameField, this._playersState.get(player)! )); // ДОПИСАТЬ
+			
+			// const playerNumber = this._playersState.get( player );
+			
+			// if ( playerNumber == null )
+			// {
+			// 	this._sendMessage(
+			// 		player,
+			// 		{
+			// 			type: 'changePlayer',
+			// 			myTurn: true,
+			// 		},
+			// 	)
+			// 		.catch( onError );
+			// 	this._sendMessage(
+			// 		currentPlayer,
+			// 		{
+			// 			type: 'changePlayer',
+			// 			myTurn: false,
+			// 		},
+			// 	)
+			// 		.catch( onError );
 				
-				return;
-			}
+			// 	return;
+			// }
 			
-			if ( playerNumber > maxNumber )
-			{
-				maxNumber = playerNumber;
-				maxNumberPlayer = player;
-			}
+			// if ( playerNumber > maxNumber )
+			// {
+			// 	maxNumber = playerNumber;
+			// 	maxNumberPlayer = player;
+			// }
 		}
 		
-		for ( const player of this._session )
+		this._currentMove = player2;
+
+		// for ( const player of this._session )
+		// {
+		// 	this._sendMessage(
+		// 		player,
+		// 		{
+		// 			type: 'gameResult',
+		// 			win: ( player === maxNumberPlayer ),
+		// 		},
+		// 	)
+		// 		.catch( onError );
+		// }
+
+		if ( !endGame )
+		{
+			this._sendMessage(
+				player2,
+				{
+					type: 'changePlayer',
+					myTurn: true,
+					gameField: this._gameField,
+					role: (currentRole === 'x' ? 'o' : 'x')
+				},
+			)
+				.catch( onError );
+
+			this._sendMessage (
+				currentPlayer,
+				{
+					type: 'changePlayer',
+					myTurn: false,
+					gameField: this._gameField,
+					role: currentRole
+				},
+			)
+				.catch( onError );
+
+			return;
+		}
+
+		for (const player of this._session )
 		{
 			this._sendMessage(
 				player,
 				{
 					type: 'gameResult',
-					win: ( player === maxNumberPlayer ),
+					win: Game._checkWin(this._gameField, this._playersState.get(player)!),
 				},
 			)
 				.catch( onError );
 		}
 	}
+
+	private static _checkWin(field: Array<Array<CellState>>, role: string): boolean
+	{
+		// ДОПИСАТЬ
+		const r = role;
+		console.log(r);
+		const f = field[0][0];
+		console.log(f);
+		return false; 
+	}
+
+
 }
 
 export {

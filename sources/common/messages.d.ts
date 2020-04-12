@@ -1,11 +1,30 @@
 /**
  * Начало игры
  */
+export type PlayerRole = 'x' | 'o';
+export type CellState = 'x' | 'o' | 'empty';
+
+
 export type GameStartedMessage = {
 	/** Тип сообщения */
 	type: 'gameStarted';
 	/** Мой ход? */
 	myTurn: boolean;
+	/** Игровое поле */
+	gameField: Array<Array<CellState>>;
+	/** Роль игрока */
+	role: PlayerRole;
+};
+
+export type CellPosition = {
+	row: number;
+	col: number;
+};
+
+export type PlayerGameState = {
+	clicked: boolean;
+	position: CellPosition;
+	role: PlayerRole;
 };
 
 /**
@@ -19,11 +38,11 @@ export type GameAbortedMessage = {
 /**
  * Ход игрока
  */
-export type PlayerRollMessage = {
+export type PlayerMoveMessage = {
 	/** Тип сообщения */
-	type: 'playerRoll';
-	/** Число, названное игроком */
-	number: number;
+	type: 'playerMove';
+	/** Ход игрока */
+	move: PlayerGameState;
 };
 
 /**
@@ -44,6 +63,10 @@ export type ChangePlayerMessage = {
 	type: 'changePlayer';
 	/** Мой ход? */
 	myTurn: boolean;
+	/** Игровое поле */
+	gameField: Array<Array<CellState>>;
+	/** роль игрока */
+	role: PlayerRole;
 };
 
 /**
@@ -89,7 +112,7 @@ export type AnyServerMessage =
  * Сообщения от клиента к серверу
  */
 export type AnyClientMessage =
-	| PlayerRollMessage
+	| PlayerMoveMessage
 	| RepeatGame
 	| IncorrectRequestMessage
 	| IncorrectResponseMessage;

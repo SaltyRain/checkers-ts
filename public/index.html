@@ -3,32 +3,79 @@
 <head>
 	<meta charset="UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<title>Игра</title>
+	<link href="https://fonts.googleapis.com/css?family=Open+Sans:400,700&display=swap" rel="stylesheet">
+	<link href="styles/style.css" rel="stylesheet">
+
+	<title>Крестики - нолики</title>
 </head>
 <body>
 	<header>
-		<h1>Игра</h1>
+		<h1 class="game-heading">Крестики - нолики</h1>
 	</header>
 	
 	<main class="waiting">
-		<h2>Подождите подключения следующего игрока</h2>
+		<h2 class="screen-heading">Подождите подключения следующего игрока</h2>
 	</main>
 	
 	<main class="game" hidden>
-		<h2>Ход противника</h2>
-		<form name="player-roll">
-			<fieldset disabled>
-				<label for="f-player-roll-number">Ваше число</label>
-				<input type="number" min="0" max="100" step="1" value="0" id="f-player-roll-number" name="number" />
-				<button type="submit">Отправить</button>
-			</fieldset>
-		</form>
+		<h2 class="screen-heading">Ход противника</h2>
+
+		<section class="container">
+			<h3 class="visually-hidden">Игровое поле</h3>
+
+			<table class="field">
+				<tbody class="field__body">
+					<tr class="field__row">
+						<td class="field__cell" id="1-1">
+							<svg jsname="uECznc" class="x-and-o x" aria-label="X" role="img" viewBox="0 0 128 128" style="display: none;"><path class="hFJ9Ve" d="M16,16L112,112" style="stroke: rgb(84, 84, 84); stroke-dasharray: 135.764; stroke-dashoffset: 0;"></path><path class="hFJ9Ve" d="M112,16L16,112" style="stroke: rgb(84, 84, 84); stroke-dasharray: 135.764; stroke-dashoffset: 0;"></path></svg>
+							<svg jsname="D7yUae" class="x-and-o o" aria-label="O" role="img" viewBox="0 0 128 128" style="display: none;"><path class="hFJ9Ve" d="M64,16A48,48 0 1,0 64,112A48,48 0 1,0 64,16" style="stroke: rgb(242, 235, 211);stroke-dasharray: 301.635;stroke-dashoffset: 0;"></path></svg>
+						</td>
+						<td class="field__cell" id="1-2">
+							<svg jsname="uECznc" class="x-and-o x" aria-label="X" role="img" viewBox="0 0 128 128" style="display: block;"><path class="hFJ9Ve" d="M16,16L112,112" style="stroke: rgb(84, 84, 84); stroke-dasharray: 135.764; stroke-dashoffset: 0;"></path><path class="hFJ9Ve" d="M112,16L16,112" style="stroke: rgb(84, 84, 84); stroke-dasharray: 135.764; stroke-dashoffset: 0;"></path></svg>
+							<svg jsname="D7yUae" class="x-and-o o" aria-label="O" role="img" viewBox="0 0 128 128" style="display: none;"><path class="hFJ9Ve" d="M64,16A48,48 0 1,0 64,112A48,48 0 1,0 64,16" style="stroke: rgb(242, 235, 211);stroke-dasharray: 301.635;stroke-dashoffset: 0;"></path></svg>
+						</td>
+						<td class="field__cell" id="1-3">
+							<svg jsname="uECznc" class="x-and-o x" aria-label="X" role="img" viewBox="0 0 128 128" style="display: none;"><path class="hFJ9Ve" d="M16,16L112,112" style="stroke: rgb(84, 84, 84); stroke-dasharray: 135.764; stroke-dashoffset: 0;"></path><path class="hFJ9Ve" d="M112,16L16,112" style="stroke: rgb(84, 84, 84); stroke-dasharray: 135.764; stroke-dashoffset: 0;"></path></svg>
+							<svg jsname="D7yUae" class="x-and-o o" aria-label="O" role="img" viewBox="0 0 128 128" style=" display: block;"><path class="hFJ9Ve" d="M64,16A48,48 0 1,0 64,112A48,48 0 1,0 64,16" style="stroke: rgb(242, 235, 211);stroke-dasharray: 301.635;stroke-dashoffset: 0;"></path></svg>
+						</td>
+					</tr>
+					<tr class="field__row">
+						<td class="field__cell" id="2-1">
+							<svg jsname="uECznc" class="x-and-o x" aria-label="X" role="img" viewBox="0 0 128 128" style="display:block;"><path class="hFJ9Ve" d="M16,16L112,112" style="stroke: rgb(84, 84, 84); stroke-dasharray: 135.764; stroke-dashoffset: 0;"></path><path class="hFJ9Ve" d="M112,16L16,112" style="stroke: rgb(84, 84, 84); stroke-dasharray: 135.764; stroke-dashoffset: 0;"></path></svg>
+							<svg jsname="D7yUae" class="x-and-o o" aria-label="O" role="img" viewBox="0 0 128 128" style=" display: none;"><path class="hFJ9Ve" d="M64,16A48,48 0 1,0 64,112A48,48 0 1,0 64,16" style="stroke: rgb(242, 235, 211);stroke-dasharray: 301.635;stroke-dashoffset: 0;"></path></svg>
+						</td>
+						<td class="field__cell" id="2_2">
+							<svg jsname="uECznc" class="x-and-o x" aria-label="X" role="img" viewBox="0 0 128 128" style="display: none;"><path class="hFJ9Ve" d="M16,16L112,112" style="stroke: rgb(84, 84, 84); stroke-dasharray: 135.764; stroke-dashoffset: 0;"></path><path class="hFJ9Ve" d="M112,16L16,112" style="stroke: rgb(84, 84, 84); stroke-dasharray: 135.764; stroke-dashoffset: 0;"></path></svg>
+							<svg jsname="D7yUae" class="x-and-o o" aria-label="O" role="img" viewBox="0 0 128 128" style=" display: block;"><path class="hFJ9Ve" d="M64,16A48,48 0 1,0 64,112A48,48 0 1,0 64,16" style="stroke: rgb(242, 235, 211);stroke-dasharray: 301.635;stroke-dashoffset: 0;"></path></svg>
+						</td>
+						<td class="field__cell" id="2_3">
+							<svg jsname="uECznc" class="x-and-o x" aria-label="X" role="img" viewBox="0 0 128 128" style="display: none;"><path class="hFJ9Ve" d="M16,16L112,112" style="stroke: rgb(84, 84, 84); stroke-dasharray: 135.764; stroke-dashoffset: 0;"></path><path class="hFJ9Ve" d="M112,16L16,112" style="stroke: rgb(84, 84, 84); stroke-dasharray: 135.764; stroke-dashoffset: 0;"></path></svg>
+							<svg jsname="D7yUae" class="x-and-o o" aria-label="O" role="img" viewBox="0 0 128 128" style=" display: block;"><path class="hFJ9Ve" d="M64,16A48,48 0 1,0 64,112A48,48 0 1,0 64,16" style="stroke: rgb(242, 235, 211);stroke-dasharray: 301.635;stroke-dashoffset: 0;"></path></svg>
+						</td>
+					</tr>
+					<tr class="field__row">
+						<td class="field__cell" id="3_1">
+							<svg jsname="uECznc" class="x-and-o x" aria-label="X" role="img" viewBox="0 0 128 128" style="display: none;"><path class="hFJ9Ve" d="M16,16L112,112" style="stroke: rgb(84, 84, 84); stroke-dasharray: 135.764; stroke-dashoffset: 0;"></path><path class="hFJ9Ve" d="M112,16L16,112" style="stroke: rgb(84, 84, 84); stroke-dasharray: 135.764; stroke-dashoffset: 0;"></path></svg>
+							<svg jsname="D7yUae" class="x-and-o o" aria-label="O" role="img" viewBox="0 0 128 128" style=" display: none;"><path class="hFJ9Ve" d="M64,16A48,48 0 1,0 64,112A48,48 0 1,0 64,16" style="stroke: rgb(242, 235, 211);stroke-dasharray: 301.635;stroke-dashoffset: 0;"></path></svg>
+						</td>
+						<td class="field__cell" id="3_2">
+							<svg jsname="uECznc" class="x-and-o x" aria-label="X" role="img" viewBox="0 0 128 128" style="display: none;"><path class="hFJ9Ve" d="M16,16L112,112" style="stroke: rgb(84, 84, 84); stroke-dasharray: 135.764; stroke-dashoffset: 0;"></path><path class="hFJ9Ve" d="M112,16L16,112" style="stroke: rgb(84, 84, 84); stroke-dasharray: 135.764; stroke-dashoffset: 0;"></path></svg>
+							<svg jsname="D7yUae" class="x-and-o o" aria-label="O" role="img" viewBox="0 0 128 128" style="display: none;"><path class="hFJ9Ve" d="M64,16A48,48 0 1,0 64,112A48,48 0 1,0 64,16" style="stroke: rgb(242, 235, 211);stroke-dasharray: 301.635;stroke-dashoffset: 0;"></path></svg>
+						</td>
+						<td class="field__cell" id="3_3">
+							<svg jsname="uECznc" class="x-and-o x" aria-label="X" role="img" viewBox="0 0 128 128" style="display: none;"><path class="hFJ9Ve" d="M16,16L112,112" style="stroke: rgb(84, 84, 84); stroke-dasharray: 135.764; stroke-dashoffset: 0;"></path><path class="hFJ9Ve" d="M112,16L16,112" style="stroke: rgb(84, 84, 84); stroke-dasharray: 135.764; stroke-dashoffset: 0;"></path></svg>
+							<svg jsname="D7yUae" class="x-and-o o" aria-label="O" role="img" viewBox="0 0 128 128" style="display: none;"><path class="hFJ9Ve" d="M64,16A48,48 0 1,0 64,112A48,48 0 1,0 64,16" style="stroke: rgb(242, 235, 211);stroke-dasharray: 301.635;stroke-dashoffset: 0;"></path></svg>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</section>
 	</main>
 	
 	<main class="result" hidden>
-		<h2>Игра закончена</h2>
-		<p>Игра прервана</p>
-		<button type="button" class="restart">Перезапустить</button>
+		<h2 class="screen-heading">Игра закончена</h2>
+		<p class="game-result">Игра прервана</p>
+		<button class="button button--restart restart" type="button">Перезапустить</button>
 	</main>
 	
 	<script type="module" src="scripts/index.js"></script>

@@ -1,0 +1,102 @@
+/* ---------- global ---------- */
+
+body {
+    background-color: #14bdac;
+    color: rgb(242, 235, 211);
+    font-family: 'Open Sans', sans-serif;
+    font-size: 18px;
+}
+
+
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    border: 0;
+    padding: 0;
+    clip: rect(0 0 0 0);
+    overflow: hidden;
+}
+
+img {
+    width: 100%;
+}
+
+a {
+    text-decoration: none;
+}
+
+.game-heading {
+    text-align: center;
+    margin-top: 30px;
+    font-weight: 700;
+}
+
+.screen-heading {
+    text-align: center;
+    font-weight: 700;
+}
+
+.button {
+    background-color: rgb(242, 235, 211);
+    color: #21211B;
+    border: 0;
+    border-radius: 20px;
+    font-size: 24px;
+    font-weight: 700;
+    
+}
+
+/* ---------- container ---------- */
+
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    position: relative;
+}
+
+
+/* ---------- field ---------- */
+
+
+.field {
+    border-spacing: 5px;
+    background-color: rgb(242, 235, 211);
+}
+
+
+.field__row {
+    display: table-row;
+    vertical-align: inherit;
+    border-color: inherit;
+}
+
+.field__cell {
+    background-color: #14bdac;
+    height: 48px;
+    width: 48px;
+
+    padding: 24px;
+
+    position: relative;
+    vertical-align: top;
+}
+
+/* ---------- X / O ---------- */
+
+.x-and-o {
+    fill: none;
+    stroke: black;
+    stroke-width: 16px;
+    transition: stroke-dashoffset 0.225s cubic-bezier(0.4,0,0.2,1);
+    -webkit-transition: stroke-dashoffset 0.225s cubic-bezier(0.4,0,0.2,1);
+}
+
+.o {
+    stroke: rgb(242, 235, 211);
+    stroke-dasharray: 301.635;
+    stroke-dashoffset: 0;
+}

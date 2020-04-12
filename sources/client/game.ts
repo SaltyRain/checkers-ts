@@ -1,6 +1,7 @@
 import { openScreen } from './screens.js';
 import * as GameScreen from './screens/game.js';
 import * as ResultScreen from './screens/result.js';
+import { PlayerGameState, PlayerRole, CellState } from "../common/messages";
 
 GameScreen.setTurnHandler( turnHandler );
 ResultScreen.setRestartHandler( restartHandler );
@@ -23,13 +24,13 @@ function setSendMessage( sendMessageFunction: typeof sendMessage ): void
 /**
  * Обрабатывает ход игрока
  * 
- * @param number Загаданное пользователем число
+ * @param move Ход игрока
  */
-function turnHandler( number: number ): void
+function turnHandler( move: PlayerGameState ): void
 {
 	sendMessage( {
-		type: 'playerRoll',
-		number,
+		type: 'playerMove',
+		move: move,
 	} );
 }
 
@@ -55,10 +56,12 @@ function startGame(): void
  * Меняет активного игрока
  * 
  * @param myTurn Ход текущего игрока?
+ * @param gameField Игровое поле
+ * @param role Роль игрока
  */
-function changePlayer( myTurn: boolean ): void
+function changePlayer( myTurn: boolean, gameField: Array<Array<CellState>>, role: PlayerRole ): void
 {
-	GameScreen.update( myTurn );
+	GameScreen.update( myTurn, gameField, role );
 }
 
 /**
