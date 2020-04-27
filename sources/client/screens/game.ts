@@ -1,7 +1,6 @@
 import { PlayerGameState, PlayerRole, CellState } from "../../common/messages";
 
 const playerState: PlayerGameState = {
-	clicked: false,
 	position: {
 		row: 0,
 		col: 0
@@ -26,29 +25,6 @@ if ( !title )
 	throw new Error( 'Can\'t find required elements on "game" screen' );
 }
 
-function handleCellClick(): void 
-{
-	const cells = document.querySelectorAll('.field__cell');
-	cells.forEach(function(cell: Node) {
-		cell.addEventListener('click', function(evt: Event): void {
-			console.log(cell);
-			const plRole: PlayerRole = 'x';
-			console.log(plRole);
-			// console.log(playerState);
-			// const playerMark = cell.
-			// let id = cell.id.split('-');
-			// ...
-			// playerState.position.row = Number(id[0]);
-			// playerState.position.col = Number(id[1]);
-			console.log(evt);
-			playerState.clicked = false; // ???
-			turnHandler &&  turnHandler( playerState );
-		})
-	})
-}
-
-handleCellClick();
-
 /**
  * Обработчик хода игрока
  */
@@ -59,7 +35,69 @@ type TurnHandler = ( move: PlayerGameState ) => void;
  */
 let turnHandler: TurnHandler;
 
+function handleCellClick(): void 
+{
+	const cells: NodeListOf<HTMLElement> = document.querySelectorAll('.field__cell');
 
+	for ( const cell of cells )
+	{
+		cell.addEventListener(
+			'click',
+			( event ) =>
+			{
+				const id = cell.id.split( '-' );
+
+				playerState.position.row = Number(id[0]);
+				playerState.position.col = Number(id[1]);
+				console.log(event);
+				turnHandler && turnHandler( playerState );
+			}
+		)
+	}
+	
+}
+
+handleCellClick();
+
+
+
+/**
+ * Обновляет доску
+ * @param row позиция по y
+ * @param col позиция по x
+ * @param cellstate состояние клетки
+ */
+function renderCell(row: number, col: number, cellstate: CellState): void
+{
+	console.log('renderCell row: ' + row);
+	console.log('renderCell col: ' + col);
+	console.log('renderCell cellstate: ' + cellstate);
+	const cell = document.getElementById((row + '-' + col)) as HTMLElement;
+	// const mark: children = 
+	if (cellstate === 'x')
+	{
+		cell.children[0].classList.add('mark-visible');
+	}
+	else if (cellstate === 'o')
+	{
+		cell.children[1].classList.add('mark-visible');
+	}
+}
+
+function renderField(field: Array<Array<CellState>>): void
+{
+	console.log('рендерю поле');
+	for (let i: number = 0; i <= 2; i++)
+	{
+		for (let j: number = 0; j <= 2; j++)
+		{
+			if (field[i][j] === 'empty')
+				continue;
+			renderCell(i, j, field[i][j])
+
+		}
+	}
+}
 
 
 /**
@@ -71,6 +109,9 @@ function update( myTurn: boolean, gameField: Array<Array<CellState>>, role: Play
 {
 	console.log(gameField);
 	console.log(role);
+
+	renderField(gameField);
+
 	playerState.role = role;
 	if ( myTurn )
 	{

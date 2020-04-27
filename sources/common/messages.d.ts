@@ -1,10 +1,16 @@
 /**
- * Начало игры
+ * Чем играет игрок?
  */
 export type PlayerRole = 'x' | 'o';
+
+/**
+ * Состояние клетки
+ */
 export type CellState = 'x' | 'o' | 'empty';
 
-
+/**
+ * Изначальное состояние поля при запуске игры
+ */
 export type GameStartedMessage = {
 	/** Тип сообщения */
 	type: 'gameStarted';
@@ -16,15 +22,20 @@ export type GameStartedMessage = {
 	role: PlayerRole;
 };
 
+/**
+ * Куда походил игрок
+ */
 export type CellPosition = {
 	row: number;
 	col: number;
 };
 
+/**
+ * Состояние игрока
+ */
 export type PlayerGameState = {
-	clicked: boolean;
-	position: CellPosition;
-	role: PlayerRole;
+	role: PlayerRole; 
+	position: CellPosition; 
 };
 
 /**
@@ -104,7 +115,9 @@ export type AnyServerMessage =
 	| GameStartedMessage
 	| GameAbortedMessage
 	| GameResultMessage
+
 	| ChangePlayerMessage
+
 	| IncorrectRequestMessage
 	| IncorrectResponseMessage;
 
@@ -113,6 +126,8 @@ export type AnyServerMessage =
  */
 export type AnyClientMessage =
 	| PlayerMoveMessage
+	
 	| RepeatGame
+
 	| IncorrectRequestMessage
 	| IncorrectResponseMessage;

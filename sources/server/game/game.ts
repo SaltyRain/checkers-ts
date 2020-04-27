@@ -89,6 +89,8 @@ class Game
 	private _sendStartMessage(): Promise<void[]>
 	{
 		this._gameField = [];
+		this._gameField = Game._generateGameField(this._gameField);
+
 		this._currentMove = this._session[0];
 		this._playersState = new WeakMap<WebSocket, PlayerRole>();
 		
@@ -230,6 +232,26 @@ class Game
 		}
 	}
 	
+
+	/**
+	 * Заполняем поле в начальное состояние
+	 * @param field игровое поле
+	 */
+	private static _generateGameField(field: Array<Array<CellState>>): Array<Array<CellState>>
+	{
+		let gameField: Array<Array<CellState>> = field;
+		for ( let i: number = 0; i <= 2; i++) 
+		{
+			gameField.push([]);
+			for (let j: number = 0; j <= 2; j++) 
+			{
+				gameField[i].push('empty');
+			}
+		}
+		return gameField;
+	}
+
+
 	/**
 	 * Обрабатывает ход игрока
 	 * 
@@ -238,6 +260,7 @@ class Game
 	 */
 	private _onPlayerMove( currentPlayer: WebSocket, moveInfo: PlayerGameState ): void
 	{
+		/** Проверяет текущего игрока */
 		if ( this._currentMove !== currentPlayer)
 		{
 			this._sendMessage(
@@ -252,7 +275,8 @@ class Game
 			return;
 		}
 		
-		if (moveInfo.position.col > 3 || moveInfo.position.row > 3 || moveInfo.position.col < 1 || moveInfo.position.col < 1)
+		/** Проверяет выход за границы поля */
+		if (moveInfo.position.col > 2 || moveInfo.position.row > 2 || moveInfo.position.col < 0 || moveInfo.position.row < 0)
 		{
 			this._sendMessage(
 				currentPlayer,
@@ -265,83 +289,47 @@ class Game
 			return;
 		}
 
-		if (moveInfo.clicked === true)
+		/** Проверяет, не занята ли клетка */
+		if (this._gameField[moveInfo.position.row][moveInfo.position.col] !== 'empty')
 		{
 			this._sendMessage(
 				currentPlayer,
 				{
 					type: 'incorrectRequest',
-					message: 'Cell is occupied',
-				},
+					message: 'This cell is oppucied already',
+				}
 			)
-				.catch( onError );
-			return;
 		}
 
-		const currentRole: PlayerRole = this._playersState.get(currentPlayer)!;
-
-		// this._playersState.set( currentPlayer, currentPlayerNumber );
 		
-		// let maxNumber: number = currentPlayerNumber;
-		// let maxNumberPlayer: WebSocket = currentPlayer;
-
+		const currentRole: PlayerRole = this._playersState.get(currentPlayer)!;
 		let player2: WebSocket = currentPlayer;
-		let endGame: number = 0;		
+		let endGame: number = 0;
+
+		// ??
 		for ( const player of this._session )
 		{
 			if (player !== currentPlayer)
 			{
 				player2 = player;
 			}
-			endGame |= Number(Game._checkWin( this._gameField, this._playersState.get(player)! )); // ДОПИСАТЬ
+			endGame |= Number(Game._checkWin( this._gameField, this._playersState.get(player)! )); 
 			
-			// const playerNumber = this._playersState.get( player );
-			
-			// if ( playerNumber == null )
-			// {
-			// 	this._sendMessage(
-			// 		player,
-			// 		{
-			// 			type: 'changePlayer',
-			// 			myTurn: true,
-			// 		},
-			// 	)
-			// 		.catch( onError );
-			// 	this._sendMessage(
-			// 		currentPlayer,
-			// 		{
-			// 			type: 'changePlayer',
-			// 			myTurn: false,
-			// 		},
-			// 	)
-			// 		.catch( onError );
-				
-			// 	return;
-			// }
-			
-			// if ( playerNumber > maxNumber )
-			// {
-			// 	maxNumber = playerNumber;
-			// 	maxNumberPlayer = player;
-			// }
 		}
 		
 		this._currentMove = player2;
 
-		// for ( const player of this._session )
-		// {
-		// 	this._sendMessage(
-		// 		player,
-		// 		{
-		// 			type: 'gameResult',
-		// 			win: ( player === maxNumberPlayer ),
-		// 		},
-		// 	)
-		// 		.catch( onError );
-		// }
-
 		if ( !endGame )
 		{
+			/** Логика игры */
+
+			// Записывает значение в клетку
+			this._gameField[moveInfo.position.row][moveInfo.position.col] = currentRole;
+			
+
+			/** Конец логики */
+
+			/** Смена игроков */
 			this._sendMessage(
 				player2,
 				{
@@ -367,6 +355,7 @@ class Game
 			return;
 		}
 
+		/** Отправляет сообщение о проверке на победителя каждому игроку */
 		for (const player of this._session )
 		{
 			this._sendMessage(
@@ -380,14 +369,48 @@ class Game
 		}
 	}
 
-	private static _checkWin(field: Array<Array<CellState>>, role: string): boolean
+	/** Проверяет победителя игры */
+	private static _checkWin(field: Array<Array<CellState>>, role: PlayerRole): boolean
 	{
-		// ДОПИСАТЬ
-		const r = role;
-		console.log(r);
-		const f = field[0][0];
-		console.log(f);
-		return false; 
+		let flag: number = 0;
+		let i: number;
+		let j: number;
+
+		// Проверяет по строкам
+		for (i = 0; i <= 2; i++)
+		{
+			for (j = 0; j <= 2; j++)
+			{
+				if (field[i][j] == role)
+					flag++;
+			}
+
+			if (flag === 3) 
+				return true;
+			else 
+				flag = 0;
+		}
+
+		// Проверяет по столбцам
+		for (i = 0; i <= 2; i++)
+		{
+			for (j = 0; j <= 2; j++)
+			{
+				if (field[j][i] == role)
+				flag++;
+			}
+
+			if (flag === 3) 
+				return true;
+			else 
+				flag = 0;
+		}
+
+		// Проверяет по диагонали
+		if ((field[0][0] == role && field[1][1] == role && field[2][2] == role) || (field[2][0] == role && field[1][1] == role && field[0][2] == role))
+			return true;
+
+		return false;
 	}
 
 
