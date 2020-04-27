@@ -297,8 +297,10 @@ class Game
 				{
 					type: 'incorrectRequest',
 					message: 'This cell is oppucied already',
-				}
+				},
 			)
+				.catch( onError );
+			return;
 		}
 
 		
@@ -306,7 +308,6 @@ class Game
 		let player2: WebSocket = currentPlayer;
 		let endGame: number = 0;
 
-		// ??
 		for ( const player of this._session )
 		{
 			if (player !== currentPlayer)
@@ -314,7 +315,6 @@ class Game
 				player2 = player;
 			}
 			endGame |= Number(Game._checkWin( this._gameField, this._playersState.get(player)! )); 
-			
 		}
 		
 		this._currentMove = player2;
@@ -325,7 +325,20 @@ class Game
 
 			// Записывает значение в клетку
 			this._gameField[moveInfo.position.row][moveInfo.position.col] = currentRole;
-			
+			if (Game._checkWin(this._gameField, this._playersState.get(currentPlayer)!))
+			{
+				for (const player of this._session )
+				{
+					this._sendMessage(
+						player,
+						{
+							type: 'gameResult',
+							win: Game._checkWin(this._gameField, this._playersState.get(player)!),
+						},
+					)
+						.catch( onError );
+				}
+			}
 
 			/** Конец логики */
 
@@ -381,7 +394,7 @@ class Game
 		{
 			for (j = 0; j <= 2; j++)
 			{
-				if (field[i][j] == role)
+				if (field[i][j] === role)
 					flag++;
 			}
 
@@ -396,7 +409,7 @@ class Game
 		{
 			for (j = 0; j <= 2; j++)
 			{
-				if (field[j][i] == role)
+				if (field[j][i] === role)
 				flag++;
 			}
 
@@ -407,7 +420,7 @@ class Game
 		}
 
 		// Проверяет по диагонали
-		if ((field[0][0] == role && field[1][1] == role && field[2][2] == role) || (field[2][0] == role && field[1][1] == role && field[0][2] == role))
+		if ((field[0][0] === role && field[1][1] === role && field[2][2] === role) || (field[2][0] === role && field[1][1] === role && field[0][2] === role))
 			return true;
 
 		return false;

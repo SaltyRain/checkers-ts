@@ -49,7 +49,24 @@ function restartHandler(): void
  */
 function startGame(): void
 {
+	clearField();
 	openScreen( 'game' );
+	
+}
+
+function clearField(): void
+{
+	console.log('Очистка поля');
+	let cell: HTMLElement;
+	for (let i: number = 0; i <= 2; i++)
+	{
+		for (let j: number = 0; j <= 2; j++)
+		{
+			cell = document.getElementById((i + '-' + j))!;
+			cell.children[0].classList.remove('mark-visible');
+			cell.children[1].classList.remove('mark-visible');
+		}
+	}
 }
 
 /**
@@ -69,7 +86,7 @@ function changePlayer( myTurn: boolean, gameField: Array<Array<CellState>>, role
  * 
  * @param result Результат игры
  */
-function endGame( result: 'win' | 'loose' | 'abort' ): void
+function endGame( result: 'win' | 'loose' | 'abort'  ): void
 {
 	ResultScreen.update( result );
 	openScreen( 'result' );

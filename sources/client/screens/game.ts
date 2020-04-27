@@ -43,7 +43,7 @@ function handleCellClick(): void
 	{
 		cell.addEventListener(
 			'click',
-			( event ) =>
+			() =>
 			{
 				const id = cell.id.split( '-' );
 
@@ -73,20 +73,25 @@ function renderCell(row: number, col: number, cellstate: CellState): void
 	console.log('renderCell col: ' + col);
 	console.log('renderCell cellstate: ' + cellstate);
 	const cell = document.getElementById((row + '-' + col)) as HTMLElement;
-	// const mark: children = 
 	if (cellstate === 'x')
 	{
-		cell.children[0].classList.add('mark-visible');
+		if (!cell.children[1].classList.contains('mark-visible'))
+			cell.children[0].classList.add('mark-visible');
 	}
 	else if (cellstate === 'o')
 	{
-		cell.children[1].classList.add('mark-visible');
+		if (!cell.children[0].classList.contains('mark-visible'))
+			cell.children[1].classList.add('mark-visible');
+	}
+	else if (cellstate === 'empty') 
+	{
+		cell.children[0].classList.remove('mark-visible');
+		cell.children[1].classList.remove('mark-visible');
 	}
 }
 
 function renderField(field: Array<Array<CellState>>): void
 {
-	console.log('рендерю поле');
 	for (let i: number = 0; i <= 2; i++)
 	{
 		for (let j: number = 0; j <= 2; j++)
@@ -99,6 +104,21 @@ function renderField(field: Array<Array<CellState>>): void
 	}
 }
 
+// function clearField(): void
+// {
+// 	alert('Очистка поля');
+// 	let cell: HTMLElement;
+// 	for (let i: number = 0; i <= 2; i++)
+// 	{
+// 		for (let j: number = 0; j <= 2; j++)
+// 		{
+// 			cell = document.getElementById((i + '-' + j))!;
+// 			cell.children[0].classList.remove('mark-visible');
+// 			cell.children[1].classList.remove('mark-visible');
+// 		}
+// 	}
+// }
+
 
 /**
  * Обновляет экран игры
@@ -110,6 +130,7 @@ function update( myTurn: boolean, gameField: Array<Array<CellState>>, role: Play
 	console.log(gameField);
 	console.log(role);
 
+	// clearField();
 	renderField(gameField);
 
 	playerState.role = role;

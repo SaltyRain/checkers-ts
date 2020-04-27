@@ -105,3 +105,22 @@ a {
 .mark-visible {
     display: block;
 }
+
+
+/* ---------- Result screen ---------- */
+.result-container {
+    display: block;
+    margin: auto;
+}
+.game-result {
+    display: block;
+    text-align: center;
+}
+
+.button--restart {
+    display: block;
+    text-align: center;
+    margin: auto;
+    padding: 5px 10px;
+    font-size: 18px;
+}

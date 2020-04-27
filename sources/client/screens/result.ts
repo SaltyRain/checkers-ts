@@ -1,16 +1,32 @@
 /**
  * Сообщение с итогом игры
  */
-const message = document.querySelector( 'main.result>p' ) as HTMLParagraphElement;
+const message = document.querySelector( '.game-result' ) as HTMLParagraphElement;
 /**
  * Кнопка перезапуска игры
  */
-const restart = document.querySelector( 'main.result>button.restart' ) as HTMLButtonElement;
+const restart = document.querySelector( '.button--restart' ) as HTMLButtonElement;
 
 if ( !message || !restart )
 {
 	throw new Error( 'Can\'t find required elements on "result" screen' );
 }
+
+// restart.addEventListener('click', clearField);
+
+// function clearField(): void
+// {
+// 	let cell: HTMLElement;
+// 	for (let i: number = 0; i <= 2; i++)
+// 	{
+// 		for (let j: number = 0; j <= 2; j++)
+// 		{
+// 			cell = document.getElementById((i + '-' + j))!;
+// 			cell.children[0].classList.remove('mark-visible');
+// 			cell.children[1].classList.remove('mark-visible');
+// 		}
+// 	}
+// }
 
 /**
  * Обновляет экран завершения игры
